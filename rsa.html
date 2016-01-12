@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RSA</title>
+    <script typet="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+    <script language="JavaScript" type="text/javascript" src="js/jsbn.js"></script>
+    <script language="JavaScript" type="text/javascript" src="js/rsa.js"></script>
+</head>
+<body>
+
+    <div>
+        密码：<input type='text' id="password" name='password' placeholder="password" />
+        <input type='button' class="but" value="Submit">
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('.but').click(function () {
+                var rsa = encrypt();
+
+                $.ajax({
+                    method: 'post',
+                    data: {"password": rsa},
+                    url: './rsa.php',
+                    success: function (data) {
+                        console.log(data)
+                    }
+                });
+            });
+
+            $('#password').keypress(function (event) {
+                var keyCode = (event.keyCode ? event.keyCode : event.which);
+
+                if (keyCode === 13) {
+                    var rsa = encrypt();
+
+                    $.ajax({
+                        method: 'post',
+                        data: {"password": rsa},
+                        url: './rsa.php',
+                        success: function (data) {
+                            console.log(data)
+                        }
+                    });
+                }
+            });
+
+            function encrypt() {
+                // public key notice the '\'
+                var pem = '-----BEGIN PUBLIC KEY-----\
+                MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCyDR+V/DU0CyYWakhPSjLwWVmC\
+                mMqo3uugmVXPitly7BqltGDW0c1PbcQ4Y+O/lukAa3qBvxEGqwhZSQokUCQ/mCHt\
+                FfmwlGmhHpSLZKKtPVOCKyZGCW6JdQs2ijKVgmks3jxSQ0ceeTrKU6f4KWL89DYq\
+                CTqExJISjSAq5MAarQIDAQAB\
+                -----END PUBLIC KEY-----';
+
+                var key = RSA.getPublicKey(pem);
+
+                element = document.getElementById('password');
+
+                return RSA.encrypt(element.value, key);
+            }
+
+        });
+    </script>
+</body>
+</html>
